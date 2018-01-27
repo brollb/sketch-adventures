@@ -62,7 +62,7 @@ fn main() {
         if let Some(Button::Keyboard(Key::Up)) = e.press_args() {
                 //let Some(Button::Keyboard(Key::A)) = e.press_args() {
             println!("Up!");
-            y += speed;
+            y -= speed;
         }
 
         if let Some(Button::Keyboard(Key::Down)) = e.press_args() {
