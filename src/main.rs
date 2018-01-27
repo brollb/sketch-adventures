@@ -37,13 +37,14 @@ struct Game {
     // Drawing
     is_drawing: bool,
     last_pos: Option<[f64; 2]>,
-    pub canvas: Option<image::ImageBuffer<Rgba<u8>, Vec<u8>>>
+    pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>
 }
 
 impl Game {
     pub fn new(width: f64, height: f64) -> Game {
         let player = Player::new(100.0, 100.0);
         let enemy = Enemy::new(200.0, 100.0);
+        let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
         Game{
             player,
             enemy,
@@ -55,7 +56,7 @@ impl Game {
             left_d: false,
             is_drawing: false,
             last_pos: None,
-            canvas: None
+            canvas: empty_canvas
         }
     }
 
@@ -122,6 +123,7 @@ impl Game {
         if input == Button::Mouse(MouseButton::Left) {
             println!("stopping drawing!");
             self.is_drawing = false;
+            self.on_drawing_complete();
         }
     }
 
@@ -145,12 +147,24 @@ impl Game {
 
         // Painting
         if input == Button::Mouse(MouseButton::Left) {
-            let width = self.width as u32;
-            let height = self.height as u32;
             println!("started drawing!");
             self.is_drawing = true;
-            self.canvas = Some(image::ImageBuffer::new(width, height));
+            self.clear_drawing();
         }
+    }
+
+    fn clear_drawing(&mut self) {
+        let width = self.width as u32;
+        let height = self.height as u32;
+        self.canvas = image::ImageBuffer::new(width, height);
+    }
+
+    fn on_drawing_complete(&mut self) {
+        // Get the image and detect stuff
+        // TODO
+        // Create an entity of the given type if needed
+        // TODO
+        self.clear_drawing();
     }
 
     pub fn on_mouse_move(&mut self, pos: [f64; 2]) {
@@ -158,27 +172,25 @@ impl Game {
         let height = self.height as u32;
 
         if self.is_drawing {
-            if let Some(ref mut canvas) = self.canvas {
-                let (x, y) = (pos[0] as f32, pos[1] as f32);
+            let (x, y) = (pos[0] as f32, pos[1] as f32);
 
-                if let Some(p) = self.last_pos {
-                    let (last_x, last_y) = (p[0] as f32, p[1] as f32);
-                    let distance = vec2_len(vec2_sub(p, pos)) as u32;
+            if let Some(p) = self.last_pos {
+                let (last_x, last_y) = (p[0] as f32, p[1] as f32);
+                let distance = vec2_len(vec2_sub(p, pos)) as u32;
 
-                    for i in 0..distance {
-                        let diff_x = x - last_x;
-                        let diff_y = y - last_y;
-                        let delta = i as f32 / distance as f32;
-                        let new_x = (last_x + (diff_x * delta)) as u32;
-                        let new_y = (last_y + (diff_y * delta)) as u32;
-                        if new_x < width && new_y < height {
-                            canvas.put_pixel(new_x, new_y, Rgba([0, 0, 0, 255]));
-                        };
+                for i in 0..distance {
+                    let diff_x = x - last_x;
+                    let diff_y = y - last_y;
+                    let delta = i as f32 / distance as f32;
+                    let new_x = (last_x + (diff_x * delta)) as u32;
+                    let new_y = (last_y + (diff_y * delta)) as u32;
+                    if new_x < width && new_y < height {
+                        self.canvas.put_pixel(new_x, new_y, Rgba([0, 0, 0, 255]));
                     };
                 };
+            };
 
-                self.last_pos = Some(pos);
-            }
+            self.last_pos = Some(pos);
         }
     }
 
@@ -222,13 +234,11 @@ fn main() {
             game.on_press(input);
         }
 
-        if let Some(ref canvas) = game.canvas {
-            texture = Texture::from_image(
-                    &mut window.factory,
-                    &canvas,
-                    &TextureSettings::new()
-                ).unwrap();
-        }
+        texture = Texture::from_image(
+                &mut window.factory,
+                &game.canvas,
+                &TextureSettings::new()
+            ).unwrap();
         window.draw_2d(&e, |c, g| {
             // Detect drawing...
             game.on_draw(c, g);
