@@ -1,10 +1,14 @@
 extern crate piston;
 extern crate piston_window;
 extern crate gfx_device_gl;
+extern crate find_folder;
+extern crate gfx;
 extern crate gfx_graphics;
 
 use piston_window::*;
 use piston::input::GenericEvent;
+use std::borrow::BorrowMut;
+
 
 use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
@@ -88,6 +92,18 @@ impl Game {
         }
     }
 
+    fn on_load(&mut self, w: &mut PistonWindow) {
+        let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+        let tank_sprite = assets.join("E-100_preview.png");
+        let tank_sprite = Texture::from_path(
+            &mut *w.factory.borrow_mut(),
+            &tank_sprite,
+            Flip::None,
+            &TextureSettings::new())
+            .unwrap();
+        self.player.set_sprite(tank_sprite);
+    }
+
     pub fn on_press(&mut self, input: piston::input::Button) {
         // Update the game state
         let speed = 5.0;
@@ -97,7 +113,6 @@ impl Game {
         }
 
         if let Button::Keyboard(Key::Right) = input {
-                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
             self.right_d = true;
         }
 
@@ -130,6 +145,7 @@ fn main() {
         .exit_on_esc(true).build().unwrap();
 
     let mut game = Game::new(width as f64, height as f64);
+    game.on_load(&mut window);
 
     while let Some(e) = window.next() {
         // Split this into update and render events as done
