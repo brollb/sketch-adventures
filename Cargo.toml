@@ -15,3 +15,6 @@ find_folder = "0.3.0"
 gfx_device_gl = "0.15.0"
 gfx = "0.17.0"
 piston2d-gfx_graphics = "0.48.0"
+
+image = "0.18.0"
+vecmath = "0.3.0"
