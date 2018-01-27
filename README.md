@@ -6,6 +6,7 @@
 - [x] Move the stick figure with arrow keys
 - [x] Game update loop
 - [x] Draw the ground
+- [x] drawing on the screen
 
 - [ ] Draw a stick figure (use an image?)
 - [ ] Add physics (should be provided by piston, I think)
@@ -17,7 +18,8 @@
 - Draw character on screen. Awesome idea
 - collision detection
 
-- drawing on the screen
+- [ ] text on the screen?
+
 
 ## Feature List:
 - [ ] moving 2d platformer

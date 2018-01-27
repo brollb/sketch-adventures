@@ -10,6 +10,7 @@ extern crate image;
 
 use std::fs::File;
 use piston_window::*;
+use std::thread;
 use std::borrow::BorrowMut;
 use vecmath::*;
 use image::Rgba;
@@ -173,9 +174,12 @@ impl Game {
     fn on_drawing_complete(&mut self) {
         // Save the image to a file for now. In the future, we need to hand it off
         // for classification
-        let ref mut fout = File::create("drawing.png").unwrap();
-        image::ImageRgba8(self.canvas.clone()).save(fout, image::PNG).unwrap();
-        println!("saved drawing to drawing.png");
+        let buffer = self.canvas.clone();
+        thread::spawn(move || {
+            let ref mut fout = File::create("drawing.png").unwrap();
+            image::ImageRgba8(buffer).save(fout, image::PNG).unwrap();
+            println!("saved drawing to drawing.png");
+        });
 
         // Create an entity of the given type if needed
         // TODO
