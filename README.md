@@ -23,3 +23,6 @@
 - [ ] moving 2d platformer
 - [ ] draw to add other things:
     - clock (decrease time)
+
+# Credits
+- [QuickDraw doodle classifier](https://github.com/neungkl/quickdraw-10-CNN-classifier)
