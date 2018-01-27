@@ -5,6 +5,8 @@
 - [x] Draw on the screen
 - [x] Move the stick figure with arrow keys
 
+- [ ] Game update loop
+    - 
 - [ ] Draw a stick figure (use an image?)
 - [ ] Draw the ground
 - [ ] Add physics (should be provided by piston, I think)
@@ -12,3 +14,8 @@
 - [ ] Get the user-drawn image
 - [ ] Call python classifier on the image
 - How can we get the dirty part of the screen?
+
+## Feature List:
+- [ ] moving 2d platformer
+- [ ] draw to add other things:
+    - clock (decrease time)

@@ -1,6 +1,13 @@
+extern crate piston;
 extern crate piston_window;
+extern crate gfx_device_gl;
+extern crate gfx_graphics;
 
 use piston_window::*;
+use piston::input::GenericEvent;
+
+use gfx_device_gl::{Resources, CommandBuffer};
+use gfx_graphics::GfxGraphics;
 
 mod player;
 use player::Player;
@@ -11,25 +18,54 @@ struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        let player = Player::new(100, 100);
+        let player = Player::new(100.0, 100.0);
         Game{player}
     }
 
     pub fn on_update(&self, upd: UpdateArgs) {
-        println!("Updating Game!!!");
+        // Detect collisions, etc
+        // TODO
     }
 
-    /*
-    pub fn on_draw(&self, ren: Event, window: PistonWindow) {
+    pub fn on_input(&mut self, input: piston::input::Button) {
+        // Update the game state
+        let speed = 5.0;
+        if let Button::Keyboard(Key::Left) = input {
+            self.player.x -= speed;
+        }
+
+        if let Button::Keyboard(Key::Right) = input {
+                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
+            self.player.x += speed;
+        }
+
+        if let Button::Keyboard(Key::Up) = input {
+                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
+            self.player.y -= speed;
+        }
+
+        if let Button::Keyboard(Key::Down) = input {
+                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
+            self.player.y += speed;
+        }
+    }
+
+    pub fn on_draw(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
+        clear([1.0; 4], g);
+        rectangle([1.0, 0.0, 0.0, 1.0], // red
+                  [self.player.x, self.player.y, 100.0, 100.0],
+                  c.transform, g);
+        //self.player.render(c, g)
         // Redraw the screen
+        /*
         window.draw_2d(&ren, |c, g| {
             clear([1.0; 4], g);
             rectangle([1.0, 0.0, 0.0, 1.0], // red
                       [0.0, 0.0, 100.0, 100.0],
                       c.transform, g);
         });
+        */
     }
-    */
 }
 
 fn main() {
@@ -37,59 +73,22 @@ fn main() {
         WindowSettings::new("Hello Piston!", [640, 480])
         .exit_on_esc(true).build().unwrap();
 
-    let game = Game::new();
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let speed = 5.0;
+    let mut game = Game::new();
 
     while let Some(e) = window.next() {
         // Split this into update and render events as done
         //  at http://piston-tutorial.logdown.com/posts/306682
 
-        // Update the game state
-        if let Some(Button::Keyboard(Key::Left)) = e.press_args() {
-                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
-            println!("Left!");
-            x -= speed;
+        if let Some(input) = e.press_args() {
+            game.on_input(input);
         }
 
-        if let Some(Button::Keyboard(Key::Right)) = e.press_args() {
-                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
-            println!("Right!");
-            x += speed;
-        }
-
-        if let Some(Button::Keyboard(Key::Up)) = e.press_args() {
-                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
-            println!("Up!");
-            y -= speed;
-        }
-
-        if let Some(Button::Keyboard(Key::Down)) = e.press_args() {
-                //let Some(Button::Keyboard(Key::A)) = e.press_args() {
-            println!("Down!");
-            y += speed;
-        }
-
-        // TODO: move this to the on_draw for the world...
         window.draw_2d(&e, |c, g| {
-            clear([1.0; 4], g);
-            rectangle([1.0, 0.0, 0.0, 1.0], // red
-                      [x, y, 100.0, 100.0],
-                      c.transform, g);
+            game.on_draw(c, g);
         });
 
-        /*
-        match e {
-            Some(Event::UpdateEvent(event)) => {
-                //if !event.is_none() {
-                    game.on_update(event.update_args());
-                //}
-            }
-            //Some(Event::RenderEvent(ren)) => {
-                //game.on_draw(ren, window);
-            //}
+        if let Some(args) = e.update_args() {
+            game.on_update(args);
         }
-        */
     }
 }

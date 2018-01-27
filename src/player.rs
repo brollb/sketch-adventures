@@ -1,10 +1,10 @@
 pub struct Player {
-    pub x: i32,
-    pub y: i32
+    pub x: f64,
+    pub y: f64
 }
 
 impl Player {
-    pub fn new(x: i32, y: i32) -> Player {
+    pub fn new(x: f64, y: f64) -> Player {
         Player{x, y}
     }
 }

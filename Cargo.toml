@@ -7,7 +7,9 @@ authors = [
 
 [dependencies]
 piston = "0.35.0"
-piston_window = "0.70.0"
+piston_window = "0.75.0"
 piston2d-graphics = "0.24.0"
 pistoncore-glutin_window = "0.43.0"
 piston2d-opengl_graphics = "0.50.0"
+gfx_device_gl = "0.15.0"
+piston2d-gfx_graphics = "0.48.0"
