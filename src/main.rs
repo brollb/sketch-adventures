@@ -8,6 +8,7 @@ extern crate gfx_graphics;
 extern crate vecmath;
 extern crate image;
 
+use std::fs::File;
 use piston_window::*;
 use std::borrow::BorrowMut;
 use vecmath::*;
@@ -160,8 +161,12 @@ impl Game {
     }
 
     fn on_drawing_complete(&mut self) {
-        // Get the image and detect stuff
-        // TODO
+        // Save the image to a file for now. In the future, we need to hand it off
+        // for classification
+        let ref mut fout = File::create("drawing.png").unwrap();
+        image::ImageRgba8(self.canvas.clone()).save(fout, image::PNG).unwrap();
+        println!("saved drawing to drawing.png");
+
         // Create an entity of the given type if needed
         // TODO
         self.clear_drawing();
@@ -184,6 +189,8 @@ impl Game {
                     let delta = i as f32 / distance as f32;
                     let new_x = (last_x + (diff_x * delta)) as u32;
                     let new_y = (last_y + (diff_y * delta)) as u32;
+                    // Make the line thicker?
+                    // TODO
                     if new_x < width && new_y < height {
                         self.canvas.put_pixel(new_x, new_y, Rgba([0, 0, 0, 255]));
                     };
