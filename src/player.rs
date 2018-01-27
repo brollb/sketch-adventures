@@ -6,9 +6,9 @@ use gfx_graphics::GfxGraphics;
 use piston_window::Transformed;
 
 pub struct Player {
-    pub x: f64,
-    pub y: f64,
-    pub sprite: Option<Texture<Resources>>,
+    x: f64,
+    y: f64,
+    sprite: Option<Texture<Resources>>,
 }
 
 impl Player {

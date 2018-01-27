@@ -99,6 +99,16 @@ impl Game {
             .unwrap();
 
         self.player.set_sprite(tank_sprite);
+
+        let enemy_sprite = assets.join("E-100_preview.png");
+        let enemy_sprite = Texture::from_path(
+            &mut *w.factory.borrow_mut(),
+            &enemy_sprite,
+            Flip::None,
+            &TextureSettings::new())
+            .unwrap();
+
+        self.enemy.set_sprite(enemy_sprite);
     }
 
     pub fn on_release(&mut self, input: piston::input::Button) {
