@@ -3,6 +3,7 @@ extern crate piston_window;
 use piston_window::{Context, rectangle, image, Texture};
 use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
+use piston_window::Transformed;
 
 pub struct Player {
     pub x: f64,
@@ -33,7 +34,8 @@ impl Player {
                           c.transform, g);
             }
             Some(ref sprite) => {
-                image(sprite, c.transform, g);
+                // Draw at x, y position
+                image(sprite, c.transform.trans(self.x, self.y), g);
             }
         }
     }
