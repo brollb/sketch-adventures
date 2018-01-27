@@ -51,20 +51,9 @@ impl Game {
     }
 
     pub fn on_draw(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
+        // Redraw the screen (render each thing)
         clear([1.0; 4], g);
-        rectangle([1.0, 0.0, 0.0, 1.0], // red
-                  [self.player.x, self.player.y, 100.0, 100.0],
-                  c.transform, g);
-        //self.player.render(c, g)
-        // Redraw the screen
-        /*
-        window.draw_2d(&ren, |c, g| {
-            clear([1.0; 4], g);
-            rectangle([1.0, 0.0, 0.0, 1.0], // red
-                      [0.0, 0.0, 100.0, 100.0],
-                      c.transform, g);
-        });
-        */
+        self.player.render(c, g)
     }
 }
 
