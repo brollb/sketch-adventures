@@ -16,6 +16,11 @@ impl Player {
         Player{x, y}
     }
 
+    pub fn mov(&mut self, dx: f64, dy: f64) {
+        self.x += dx;
+        self.y += dy;
+    }
+
     pub fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
         // Draw player on the screen
         rectangle([1.0, 0.0, 0.0, 1.0], // red
