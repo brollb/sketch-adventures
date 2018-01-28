@@ -30,7 +30,7 @@ impl Enemy {
 
     pub fn update(&mut self, dt: f64) {  // Should I also pass some global info here?
         // Animate falling
-        let speed = 700.0;
+        let speed = 1200.0;
         if self.y > self.max_y {
             self.reset_position();
         } else {

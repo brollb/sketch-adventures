@@ -116,7 +116,7 @@ impl Game {
     pub fn on_update(&mut self, upd: UpdateArgs) {
         // Detect collisions, etc
         let dt = upd.dt;
-        let speed = 100.0;
+        let speed = 200.0;
 
         match self.state {
             GameState::Intro => {
