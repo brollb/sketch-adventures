@@ -29,6 +29,7 @@
 
 - add walking animation?
     - lower priority...
+
 ## Images to detect:
 - lightning?
     - collision detection

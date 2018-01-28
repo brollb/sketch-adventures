@@ -12,7 +12,7 @@ impl Settings {
     pub fn new(font: GlyphCache<'static, Factory, Resources>) -> Settings {
         Settings{
             font,
-            font_size: 64
+            font_size: 24
         }
     }
 }

@@ -14,7 +14,7 @@ use std::sync::mpsc;
 use std::path::Path;
 use std::fs::File;
 use std::process::Command;
-use std::thread;
+use std::{thread, time};
 use std::borrow::BorrowMut;
 
 use piston_window::*;
@@ -59,7 +59,9 @@ struct Game {
     // Intro
     state: GameState,
     settings: resources::Settings,
-    pub message: Option<String>
+    pub message: Option<String>,
+    message_position: (f64, f64),
+    start_time: time::Instant
 }
 
 impl Game {
@@ -84,12 +86,11 @@ impl Game {
             receiver: rx,
             message: Some("Incoming Transmission...".to_string()),
             settings: settings,
-            state: GameState::Playing
+            state: GameState::Intro,
+            start_time: time::Instant::now(),
+            message_position: (10.0, 100.0)
         }
     }
-
-    // Create an intro 
-    // TODO
 
     pub fn on_update(&mut self, upd: UpdateArgs) {
         // Detect collisions, etc
@@ -108,6 +109,26 @@ impl Game {
         */
 
         match self.state {
+            GameState::Intro => {
+                let messages = [
+                    ("Hello.", (400.0, 300.0)),
+                    ("So, I've been stuck on this problem.", (300.0, 300.0)),
+                    ("I was thinking about using *lightning*...", (300.0, 300.0)),
+                    ("Or maybe something like a *clock*...", (300.0, 300.0)),
+                    ("Think you could help me out?", (300.0, 300.0))
+                ];
+
+                let duration = time::Instant::now().duration_since(self.start_time);
+                let index = (duration.as_secs()/2) as usize;
+                if let Some(data) = messages.get(index) {
+                    let &(message, position) = data;
+                    self.message = Some(message.to_string());
+                    self.message_position = position;
+                } else {
+                    self.message = None;
+                    self.state = GameState::Playing;
+                }
+            },
             GameState::Playing => {
                 if self.right_d {
                     self.player.mov(speed * dt, 0.0);
@@ -116,9 +137,6 @@ impl Game {
                 if self.left_d {
                     self.player.mov(-speed * dt, 0.0);
                 }
-            }
-            _ => {
-                println!("unknown game state!")
             }
         }
 
@@ -214,7 +232,6 @@ impl Game {
     }
 
     fn create_drawing(&mut self, class: &str) {
-        let sum = 1.0 + 0.5;
         match class {
             _ => println!("creating a {}", class)
         }
@@ -304,17 +321,19 @@ impl Game {
         // Redraw the screen (render each thing)
         clear([1.0; 4], g);
         match self.state {
-            _ =>  {
+            GameState::Playing =>  {
                 self.player.render(c, g);
                 self.enemy.render(c, g);
-
-                let text = graphics::Text::new(self.settings.font_size);
-                if let Some(ref msg) = self.message {
-                    let transform = c.transform.trans(10.0, 100.0);
-                    text.draw(&msg.to_string(), &mut self.settings.font,
-                              &c.draw_state, transform, g).unwrap();
-                }
             }
+            _ => {}
+        }
+
+        let text = graphics::Text::new(self.settings.font_size);
+        if let Some(ref msg) = self.message {
+            let (x, y) = self.message_position;
+            let transform = c.transform.trans(x, y);
+            text.draw(&msg.to_string(), &mut self.settings.font,
+                      &c.draw_state, transform, g).unwrap();
         }
 
         // Draw the ground
@@ -346,6 +365,9 @@ fn main() {
 
     // Get the game font
     game.on_load(&mut window);
+
+    //game.intro(&mut window);
+
     while let Some(e) = window.next() {
         // Split this into update and render events as done
         //  at http://piston-tutorial.logdown.com/posts/306682
@@ -364,7 +386,6 @@ fn main() {
                 &TextureSettings::new()
             ).unwrap();
 
-        let msg = 
         window.draw_2d(&e, |c, g| {
             // Detect drawing...
             game.on_draw(c, g);
