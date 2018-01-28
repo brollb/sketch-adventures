@@ -24,6 +24,17 @@
     - What types are missing?
 
 
+- [ ] add the intro scene
+- [ ] fix the font
+
+- add walking animation?
+    - lower priority...
+## Images to detect:
+- lightning?
+    - collision detection
+- clock
+    - slow down time
+
 ## Feature List:
 - [ ] moving 2d platformer
 - [ ] draw to add other things:

@@ -64,7 +64,7 @@ struct Game {
 
 impl Game {
     pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
-        let player = Player::new(100.0, 100.0);
+        let player = Player::new(100.0, height - 80.0);
         let enemy = Enemy::new(200.0, 100.0);
         let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
         let (tx, rx) = mpsc::channel();
@@ -132,7 +132,7 @@ impl Game {
 
     fn on_load(&mut self, w: &mut PistonWindow) {
         let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
-        let tank_sprite = assets.join("E-100_preview.png");
+        let tank_sprite = assets.join("stick-person.png");
         let tank_sprite = Texture::from_path(
             &mut *w.factory.borrow_mut(),
             &tank_sprite,
@@ -331,7 +331,7 @@ fn main() {
         .exit_on_esc(true).build().unwrap();
 
     // Load the necessary fonts...
-    let font_path = Path::new("assets/1942.ttf");
+    let font_path = Path::new("assets/Courier Prime.ttf");
     let factory = window.factory.clone();
     let font = GlyphCache::new(font_path, factory, TextureSettings::new()).unwrap();
     let settings = resources::Settings::new(font);
