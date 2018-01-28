@@ -373,8 +373,8 @@ impl Game {
         match self.state {
             GameState::Playing =>  {
                 self.goal.render(c, g);
-                self.enemy.render(c, g);
                 self.player.render(c, g);
+                self.enemy.render(c, g);
                 for creation in self.creations.iter() {
                     creation.render(c, g);
                 }
