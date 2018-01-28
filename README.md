@@ -1,4 +1,8 @@
-# To Be Determined
+# Sketch Adventures
+
+This is a game made for Global Game Jam 2018. One of the main goals was to learn rust so it is a little less than polished ;)
+
+Regardless, it is a game that allows users to move with the arrow keys and draw with the mouse. The drawing is then classified using [this model](https://github.com/neungkl/quickdraw-10-CNN-classifier) and then the given entity is created in the game world. Clocks are pretty much the only one with any sort of meaningful behavior but it was still an interesting idea imo.
 
 ## To Do:
 - How can we get the dirty part of the screen?
@@ -33,10 +37,10 @@
 ## Images to detect:
 - [x] lightning?
     - collision detection??
-- [ ] clock
+- [x] clock
     - slow down time
-- [ ] add and show other detected drawings
-    - fade them out if they are not appropriate for the level
+
+- [ ] clock
 
 ## Feature List:
 - [ ] moving 2d platformer
