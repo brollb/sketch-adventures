@@ -4,8 +4,13 @@ This is a game made for Global Game Jam 2018. One of the main goals was to learn
 
 Regardless, it is a game that allows users to move with the arrow keys and draw with the mouse. The drawing is then classified using [this model](https://github.com/neungkl/quickdraw-10-CNN-classifier) and then the given entity is created in the game world. Clocks are pretty much the only one with any sort of meaningful behavior but it was still an interesting idea imo.
 
+## Installation
+First, you need to install the python dependencies from `requirements.txt`. Then, you can compile this using rust (we recommend rustc 1.24.0-nightly):
+
+    pip install -r requirements.txt
+    cargo run
+
 ## To Do:
-- How can we get the dirty part of the screen?
 - [x] Draw on the screen
 - [x] Move the stick figure with arrow keys
 - [x] Game update loop
@@ -24,6 +29,7 @@ Regardless, it is a game that allows users to move with the arrow keys and draw 
 - Draw character on screen. Awesome idea
 
 - [ ] collision detection
+    - hacked something rough in...
 - [x] text on the screen?
     - What types are missing?
 
@@ -38,11 +44,5 @@ Regardless, it is a game that allows users to move with the arrow keys and draw 
 - [x] lightning?
     - collision detection??
 - [x] clock
-    - slow down time
+    - [x] freeze time
 
-- [ ] clock
-
-## Feature List:
-- [ ] moving 2d platformer
-- [ ] draw to add other things:
-    - clock (decrease time)
