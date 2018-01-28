@@ -35,6 +35,8 @@
     - collision detection??
 - [ ] clock
     - slow down time
+- [ ] add and show other detected drawings
+    - fade them out if they are not appropriate for the level
 
 ## Feature List:
 - [ ] moving 2d platformer

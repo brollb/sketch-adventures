@@ -1,3 +1,5 @@
+# classifies doodle drawings of $CATEGORIES.
+# usage: call the the script with a trasnparent drawing as an argument
 import os
 import math
 import sys
@@ -83,7 +85,7 @@ if __name__ == '__main__':
     image = rasterize(image)
     image = resize_image(image)
     image = image.convert('L') # make it grayscale
-    save_image(image, 'cropped_drawing.png')
+    # save_image(image, 'cropped_drawing.png')
 
     image_data = np.asarray(image, np.float32)
     image_data = image_data.reshape(28*28) # redundant?
