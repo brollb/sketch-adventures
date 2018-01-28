@@ -61,6 +61,7 @@ struct Game {
     settings: resources::Settings,
     pub message: Option<String>,
     message_position: (f64, f64),
+    font_size: u32,
     start_time: time::Instant
 }
 
@@ -88,6 +89,7 @@ impl Game {
             settings: settings,
             state: GameState::Intro,
             start_time: time::Instant::now(),
+            font_size: 24,
             message_position: (10.0, 100.0)
         }
     }
@@ -111,19 +113,22 @@ impl Game {
         match self.state {
             GameState::Intro => {
                 let messages = [
-                    ("Hello.", (400.0, 300.0)),
-                    ("So, I've been stuck on this problem.", (300.0, 300.0)),
-                    ("I was thinking about using *lightning*...", (300.0, 300.0)),
-                    ("Or maybe something like a *clock*...", (300.0, 300.0)),
-                    ("Think you could help me out?", (300.0, 300.0))
+                    ("INCOMING TRANSMISSION", (250.0, 100.0), 48),
+                    ("Caller: Hello.", (320.0, 300.0), 24),
+                    ("Caller: So, I've been stuck on this problem.", (220.0, 300.0), 24),
+                    ("Caller: I was thinking about using *lightning*...", (200.0, 300.0), 24),
+                    ("Caller: Or maybe something like a *clock*...", (220.0, 300.0), 24),
+                    ("Caller: Think you could help me out?", (220.0, 300.0), 24),
+                    ("You: Sure, I could probably sketch something out!", (200.0, 300.0), 24)
                 ];
 
                 let duration = time::Instant::now().duration_since(self.start_time);
                 let index = (duration.as_secs()/2) as usize;
                 if let Some(data) = messages.get(index) {
-                    let &(message, position) = data;
+                    let &(message, position, font_size) = data;
                     self.message = Some(message.to_string());
                     self.message_position = position;
+                    self.font_size = font_size;
                 } else {
                     self.message = None;
                     self.state = GameState::Playing;
@@ -328,7 +333,7 @@ impl Game {
             _ => {}
         }
 
-        let text = graphics::Text::new(self.settings.font_size);
+        let text = graphics::Text::new(self.font_size);
         if let Some(ref msg) = self.message {
             let (x, y) = self.message_position;
             let transform = c.transform.trans(x, y);

@@ -24,8 +24,8 @@
     - What types are missing?
 
 
-- [ ] add the intro scene
-- [ ] fix the font
+- [x] add the intro scene
+- [x] fix the font
 
 - add walking animation?
     - lower priority...
