@@ -11,16 +11,19 @@ extern crate image;
 extern crate ggez;
 
 use std::sync::mpsc;
+use std::path::Path;
 use std::fs::File;
 use std::process::Command;
-use piston_window::*;
 use std::thread;
 use std::borrow::BorrowMut;
+
+use piston_window::*;
+use gfx_graphics::GlyphCache;
 use vecmath::*;
 use image::Rgba;
 
 
-use gfx_device_gl::{Resources, CommandBuffer, Factory};
+use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
 
 mod resources;
@@ -55,12 +58,12 @@ struct Game {
 
     // Intro
     state: GameState,
-    settings: resources::Resources,
+    settings: resources::Settings,
     pub message: Option<String>
 }
 
 impl Game {
-    pub fn new(width: f64, height: f64) -> Game {
+    pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
         let player = Player::new(100.0, 100.0);
         let enemy = Enemy::new(200.0, 100.0);
         let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
@@ -79,8 +82,8 @@ impl Game {
             canvas: empty_canvas,
             transmitter: tx,
             receiver: rx,
-            message: None,
-            settings: resources::Resources::new(),
+            message: Some("Incoming Transmission...".to_string()),
+            settings: settings,
             state: GameState::Playing
         }
     }
@@ -211,6 +214,7 @@ impl Game {
     }
 
     fn create_drawing(&mut self, class: &str) {
+        let sum = 1.0 + 0.5;
         match class {
             _ => println!("creating a {}", class)
         }
@@ -300,15 +304,15 @@ impl Game {
         // Redraw the screen (render each thing)
         clear([1.0; 4], g);
         match self.state {
-            _ =>  {  // FIXME
+            _ =>  {
                 self.player.render(c, g);
                 self.enemy.render(c, g);
 
                 let text = graphics::Text::new(self.settings.font_size);
-                if let Some(msg) = self.message {
+                if let Some(ref msg) = self.message {
                     let transform = c.transform.trans(10.0, 100.0);
-                    text.draw(&msg.to_string(), self.settings.font,
-                              &c.draw_state, transform, g);
+                    text.draw(&msg.to_string(), &mut self.settings.font,
+                              &c.draw_state, transform, g).unwrap();
                 }
             }
         }
@@ -326,7 +330,13 @@ fn main() {
         WindowSettings::new("To Be Determined", [width, height])
         .exit_on_esc(true).build().unwrap();
 
-    let mut game = Game::new(width as f64, height as f64);
+    // Load the necessary fonts...
+    let font_path = Path::new("assets/1942.ttf");
+    let factory = window.factory.clone();
+    let font = GlyphCache::new(font_path, factory, TextureSettings::new()).unwrap();
+    let settings = resources::Settings::new(font);
+
+    let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(
             &mut window.factory,
             &image::ImageBuffer::new(width, height),

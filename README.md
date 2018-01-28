@@ -7,24 +7,24 @@
 - [x] Game update loop
 - [x] Draw the ground
 - [x] drawing on the screen
+- [x] Allow the user to draw on the screen
 
 - [ ] Draw a stick figure (use an image?)
 - [ ] Add physics (should be provided by piston, I think)
-- [ ] Allow the user to draw on the screen
-- [ ] Get the user-drawn image
-- [ ] Call python classifier on the image
+    - not really necessary
+
+- [x] Get the user-drawn image
+- [x] Call python classifier on the image
 - How can we get the dirty part of the screen?
 
 - Draw character on screen. Awesome idea
-- collision detection
 
-- [ ] text on the screen?
+- [ ] collision detection
+- [x] text on the screen?
+    - What types are missing?
 
 
 ## Feature List:
 - [ ] moving 2d platformer
 - [ ] draw to add other things:
     - clock (decrease time)
-
-# Credits
-- [QuickDraw doodle classifier](https://github.com/neungkl/quickdraw-10-CNN-classifier)
