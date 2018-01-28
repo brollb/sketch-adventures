@@ -28,6 +28,7 @@ impl Settings {
     }
 
     pub fn get_sprite_for(&self, name: &str) -> piston_window::Texture<Resources> {
+        println!("Getting sprite for '{}'", name);
         match self.sprites.get(name) {
             Some(sprite) => sprite.clone(),
             None => self.default_sprite.clone()
