@@ -8,8 +8,10 @@ use gfx_graphics::GfxGraphics;
 use std::time;
 
 use resources;
+use effects;
 
 pub trait Creation {
+    fn get_effect(&self) -> &effects::Effect;
     fn is_alive(&self) -> bool;
     fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>);
     fn update(&mut self, dt: f64);
@@ -17,6 +19,7 @@ pub trait Creation {
 
 pub struct Lightning {
     pub alive: bool,
+    effect: effects::Effect,
     sprite: Texture<Resources>,
     start_time: time::Instant,
     x: f64,
@@ -26,6 +29,7 @@ pub struct Lightning {
 impl Lightning {
     pub fn new(x: f64, y: f64, settings: &resources::Settings) -> Lightning {
         Lightning{
+            effect: effects::Effect::Destroy,
             start_time: time::Instant::now(),
             alive: true,
             sprite: settings.lightning_sprite.clone(),
@@ -40,6 +44,10 @@ impl Creation for Lightning {
 
     fn is_alive(&self) -> bool {
         self.alive
+    }
+
+    fn get_effect(&self) -> &effects::Effect {
+        &self.effect
     }
 
     fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
@@ -58,6 +66,7 @@ impl Creation for Lightning {
 
 pub struct Clock {
     pub alive: bool,
+    effect: effects::Effect,
     sprite: Texture<Resources>,
     start_time: time::Instant,
     x: f64,
@@ -68,6 +77,7 @@ impl Clock {
     pub fn new(x: f64, y: f64, settings: &resources::Settings) -> Clock {
         Clock {
             start_time: time::Instant::now(),
+            effect: effects::Effect::SlowTime,
             alive: true,
             sprite: settings.clock_sprite.clone(),
             x,
@@ -77,6 +87,10 @@ impl Clock {
 }
 
 impl Creation for Clock {
+
+    fn get_effect(&self) -> &effects::Effect {
+        &self.effect
+    }
 
     fn is_alive(&self) -> bool {
         self.alive

@@ -29,6 +29,8 @@ use image::Rgba;
 use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
 
+mod effects;
+mod goal;
 mod resources;
 mod player;
 mod creations;
@@ -46,6 +48,7 @@ struct Game {
     height: f64,
     player: Player,
     enemy: Enemy,
+    goal: goal::Goal,
 
     // Relevant Key states
     up_d: bool,
@@ -66,6 +69,7 @@ struct Game {
     settings: resources::Settings,
     pub message: Option<String>,
     message_position: (f64, f64),
+    //message_creation_time: Option<time::Instant>,
     font_size: u32,
     start_time: time::Instant
 }
@@ -74,11 +78,17 @@ impl Game {
     pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
         let player = Player::new(100.0, height - 80.0);
         let enemy = Enemy::new(200.0, height - 350.0);
+
+        let end_x = width - 200.0;
+        let end_y = height - 260.0;
+        let goal = goal::Goal::new(end_x, end_y, &settings);
+
         let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
         let (tx, rx) = mpsc::channel();
         Game{
             player,
             enemy,
+            goal,
             width,
             height,
             up_d: false,
@@ -104,17 +114,6 @@ impl Game {
         // Detect collisions, etc
         let dt = upd.dt;
         let speed = 100.0;
-        self.enemy.update(dt);
-
-        /*
-        if self.up_d {
-            self.player.mov(0.0, speed * dt);
-        }
-
-        if self.down_d {
-            self.player.mov(0.0, -speed * dt);
-        }
-        */
 
         match self.state {
             GameState::Intro => {
@@ -122,6 +121,8 @@ impl Game {
                     ("INCOMING TRANSMISSION", (250.0, 100.0), 48),
                     ("Caller: Hello.", (320.0, 300.0), 24),
                     ("Caller: So, I've been stuck on this problem.", (220.0, 300.0), 24),
+                    ("Caller: I really need to get some Soylent.", (220.0, 300.0), 24),
+                    ("Caller: But there are some obstacles in the way.", (200.0, 300.0), 24),
                     ("Caller: I was thinking about using *lightning*...", (200.0, 300.0), 24),
                     ("Caller: Or maybe something like a *clock*...", (220.0, 300.0), 24),
                     ("Caller: Think you could help me out?", (240.0, 300.0), 24),
@@ -141,6 +142,18 @@ impl Game {
                 }
             },
             GameState::Playing => {
+                let mut time_stopped = false;
+                for creation in self.creations.iter() {
+                    match *creation.get_effect() {
+                        effects::Effect::SlowTime => time_stopped = true,
+                        _ => {}
+                    }
+                }
+
+                if !time_stopped {
+                    self.enemy.update(dt);
+                }
+
                 if self.right_d {
                     self.player.mov(speed * dt, 0.0);
                 }
@@ -358,8 +371,9 @@ impl Game {
         clear([1.0; 4], g);
         match self.state {
             GameState::Playing =>  {
-                self.player.render(c, g);
+                self.goal.render(c, g);
                 self.enemy.render(c, g);
+                self.player.render(c, g);
                 for creation in self.creations.iter() {
                     creation.render(c, g);
                 }
@@ -374,11 +388,6 @@ impl Game {
             text.draw(&msg.to_string(), &mut self.settings.font,
                       &c.draw_state, transform, g).unwrap();
         }
-
-        // Draw the goal
-        rectangle([0.3, 1.0, 0.3, 1.0],
-                  [self.width - 20.0, self.height - 80.0, 100.0, 100.0],
-                  c.transform, g);
 
         // Draw the ground
         rectangle([0.3, 0.3, 0.3, 1.0], // black
@@ -413,7 +422,14 @@ fn main() {
         Flip::None,
         &TextureSettings::new())
         .unwrap();
-    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite);
+
+    let goal_sprite = Texture::from_path(
+        &mut *window.factory.borrow_mut(),
+        &assets.join("soylent.jpg"),
+        Flip::None,
+        &TextureSettings::new())
+        .unwrap();
+    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite, goal_sprite);
 
     let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(

@@ -7,6 +7,7 @@ use gfx_device_gl::{Resources, Factory};
 pub struct Settings {
     pub lightning_sprite: piston_window::Texture<Resources>,
     pub clock_sprite: piston_window::Texture<Resources>,
+    pub goal_sprite: piston_window::Texture<Resources>,
     pub font: GlyphCache<'static, Factory, Resources>,
     pub font_size: u32
 }
@@ -15,11 +16,13 @@ impl Settings {
     pub fn new(
         font: GlyphCache<'static, Factory, Resources>,
         lightning_sprite: piston_window::Texture<Resources>,
-        clock_sprite: piston_window::Texture<Resources>
+        clock_sprite: piston_window::Texture<Resources>,
+        goal_sprite: piston_window::Texture<Resources>
     ) -> Settings {
         Settings{
             lightning_sprite,
             clock_sprite,
+            goal_sprite,
             font,
             font_size: 24
         }
