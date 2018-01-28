@@ -1,3 +1,4 @@
+extern crate rand;
 extern crate piston_window;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
@@ -16,32 +17,40 @@ pub struct Point {
 
 pub struct Enemy {
     sprite: Option<Texture<Resources>>,
-    origin: Point,
-    dir: f64,
     x: f64,
+    min_x: f64,
+    max_x: f64,
+    max_y: f64,
     y: f64
 }
 
 impl Enemy {
-    pub fn new(x: f64, y: f64) -> Enemy {
+    pub fn new(min_x: f64, max_x: f64, max_y: f64) -> Enemy {
         Enemy{
             sprite: None,
-            origin: Point{x, y},
-            dir: 1.0,
-            x, y
+            min_x: min_x,
+            max_x: max_x,
+            max_y: max_y,
+            x: 0.0,
+            y: max_y + 1.0
         }
     }
 
     pub fn update(&mut self, dt: f64) {  // Should I also pass some global info here?
-        let max_distance = 100.0;
-        if self.x > self.origin.x + max_distance {
-            self.dir = -1.0;
+        // Animate falling
+        let speed = 700.0;
+        if self.y > self.max_y {
+            self.reset_position();
+        } else {
+            self.y += speed * dt;
         }
-        if self.x < self.origin.x - max_distance {
-            self.dir = 1.0;
-        }
+    }
 
-        self.x = self.x + (50.0 * self.dir * dt);
+    fn reset_position(&mut self) {
+        self.y = -500.0;
+        let diff = self.max_x - self.min_x;
+        let rand_in_range = rand::random::<f64>() * diff;
+        self.x = rand_in_range + self.min_x;
     }
 
     pub fn set_sprite(&mut self, sprite: Texture<Resources>) {

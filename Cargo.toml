@@ -18,4 +18,5 @@ piston2d-gfx_graphics = "0.48.0"
 
 image = "0.18.0"
 vecmath = "0.3.0"
-ggez = "0.4"
+rand = "0.4"
+

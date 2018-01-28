@@ -10,7 +10,6 @@ extern crate gfx_graphics;
 
 extern crate vecmath;
 extern crate image;
-extern crate ggez;
 
 use std::sync::mpsc;
 use std::boxed::Box;
@@ -77,7 +76,9 @@ struct Game {
 impl Game {
     pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
         let player = Player::new(100.0, height - 80.0);
-        let enemy = Enemy::new(200.0, height - 350.0);
+        let min_x = width/4.0;
+        let max_x = min_x + width/2.0;
+        let enemy = Enemy::new(min_x, max_x, height);
 
         let end_x = width - 200.0;
         let end_y = height - 260.0;
@@ -189,7 +190,7 @@ impl Game {
 
         self.player.set_sprite(tank_sprite);
 
-        let enemy_sprite = assets.join("E-100_preview.png");
+        let enemy_sprite = assets.join("spike.png");
         let enemy_sprite = Texture::from_path(
             &mut *w.factory.borrow_mut(),
             &enemy_sprite,
