@@ -1,3 +1,5 @@
+#![feature(drain_filter)]
+
 extern crate graphics;
 extern crate piston;
 extern crate piston_window;
@@ -28,6 +30,7 @@ use gfx_graphics::GfxGraphics;
 
 mod resources;
 mod player;
+mod creations;
 use player::Player;
 mod enemy;
 use enemy::Enemy;
@@ -55,6 +58,7 @@ struct Game {
     pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     transmitter: mpsc::Sender<String>,
     receiver: mpsc::Receiver<String>,
+    creations: std::vec::Vec<creations::Lightning>,
 
     // Intro
     state: GameState,
@@ -68,7 +72,7 @@ struct Game {
 impl Game {
     pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
         let player = Player::new(100.0, height - 80.0);
-        let enemy = Enemy::new(200.0, 100.0);
+        let enemy = Enemy::new(200.0, height - 350.0);
         let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
         let (tx, rx) = mpsc::channel();
         Game{
@@ -90,7 +94,8 @@ impl Game {
             state: GameState::Intro,
             start_time: time::Instant::now(),
             font_size: 24,
-            message_position: (10.0, 100.0)
+            message_position: (10.0, 100.0),
+            creations: std::vec::Vec::new()
         }
     }
 
@@ -142,6 +147,11 @@ impl Game {
                 if self.left_d {
                     self.player.mov(-speed * dt, 0.0);
                 }
+
+                for creation in self.creations.iter_mut() {
+                    creation.update(dt);
+                }
+                self.creations.drain_filter(|c| !c.alive);
             }
         }
 
@@ -238,7 +248,15 @@ impl Game {
 
     fn create_drawing(&mut self, class: &str) {
         match class {
-            _ => println!("creating a {}", class)
+            "Lightning" => {
+                println!("adding lightning!");
+                self.message = None;
+                let (x, y) = (self.width/2.0, self.height/2.0);
+                self.creations.push(creations::Lightning::new(x, y, &self.settings));
+            },
+            _ => {
+                println!("creating a {}", class)
+            }
         }
     }
 
@@ -246,6 +264,10 @@ impl Game {
         // Save the image to a file for now. In the future, we need to hand it off
         // for classification
         let buffer = self.canvas.clone();
+
+        // Trim the transparency and get the center of the image?
+        // TODO
+
         let tx = self.transmitter.clone();
         thread::spawn(move || {
             let filename = "drawing.png";
@@ -285,6 +307,8 @@ impl Game {
             }
         });
 
+        self.message = Some("Interesting idea...".to_string());
+        self.message_position = (400.0, 300.0);
         self.clear_drawing();
     }
 
@@ -329,6 +353,9 @@ impl Game {
             GameState::Playing =>  {
                 self.player.render(c, g);
                 self.enemy.render(c, g);
+                for creation in self.creations.iter() {
+                    creation.render(c, g);
+                }
             }
             _ => {}
         }
@@ -341,10 +368,16 @@ impl Game {
                       &c.draw_state, transform, g).unwrap();
         }
 
+        // Draw the goal
+        rectangle([0.3, 1.0, 0.3, 1.0],
+                  [self.width - 20.0, self.height - 80.0, 100.0, 100.0],
+                  c.transform, g);
+
         // Draw the ground
         rectangle([0.3, 0.3, 0.3, 1.0], // black
                   [0.0, self.height - 20.0, self.width*100.0, 100.0],
                   c.transform, g);
+
     }
 }
 
@@ -358,7 +391,16 @@ fn main() {
     let font_path = Path::new("assets/Courier Prime.ttf");
     let factory = window.factory.clone();
     let font = GlyphCache::new(font_path, factory, TextureSettings::new()).unwrap();
-    let settings = resources::Settings::new(font);
+
+    let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+    let sprite = assets.join("lightning.png");
+    let lightning_sprite = Texture::from_path(
+        &mut *window.factory.borrow_mut(),
+        &sprite,
+        Flip::None,
+        &TextureSettings::new())
+        .unwrap();
+    let settings = resources::Settings::new(font, lightning_sprite);
 
     let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(

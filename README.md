@@ -32,7 +32,7 @@
 
 ## Images to detect:
 - lightning?
-    - collision detection
+    - collision detection??
 - clock
     - slow down time
 
