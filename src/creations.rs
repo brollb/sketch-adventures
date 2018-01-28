@@ -121,7 +121,7 @@ pub struct DummyCreation {
 
 impl DummyCreation {
     pub fn new(x: f64, y: f64, settings: &resources::Settings, name: &str) -> DummyCreation {
-        let mut sprite = settings.clock_sprite.clone();
+        let mut sprite = settings.unknown_sprite.clone();
         match name {
             "Hand" => {
                 sprite = settings.clock_sprite.clone();

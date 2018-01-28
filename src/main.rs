@@ -431,7 +431,7 @@ impl Game {
 fn main() {
     let (width, height) = (1280, 960);
     let mut window: PistonWindow = 
-        WindowSettings::new("To Be Determined", [width, height])
+        WindowSettings::new("Sketch Adventures", [width, height])
         .exit_on_esc(true).build().unwrap();
 
     // Load the necessary fonts...
@@ -460,7 +460,13 @@ fn main() {
         Flip::None,
         &TextureSettings::new())
         .unwrap();
-    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite, goal_sprite);
+    let unknown_sprite = Texture::from_path(
+        &mut *window.factory.borrow_mut(),
+        &assets.join("unknown.png"),
+        Flip::None,
+        &TextureSettings::new())
+        .unwrap();
+    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite, unknown_sprite, goal_sprite);
 
     let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(
