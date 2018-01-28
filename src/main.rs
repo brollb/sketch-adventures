@@ -11,6 +11,7 @@ extern crate gfx_graphics;
 extern crate vecmath;
 extern crate image;
 
+use std::collections::HashMap;
 use std::sync::mpsc;
 use std::boxed::Box;
 use std::path::Path;
@@ -428,6 +429,18 @@ impl Game {
     }
 }
 
+fn retrieve_sprite(window: &mut PistonWindow, filename: &str) -> piston_window::Texture<Resources> {
+    let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+    let sprite = assets.join(filename);
+
+    Texture::from_path(
+        &mut *window.factory.borrow_mut(),
+        &sprite,
+        Flip::None,
+        &TextureSettings::new())
+        .unwrap()
+}
+
 fn main() {
     let (width, height) = (1280, 960);
     let mut window: PistonWindow = 
@@ -440,33 +453,21 @@ fn main() {
     let font = GlyphCache::new(font_path, factory, TextureSettings::new()).unwrap();
 
     let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
-    let sprite = assets.join("lightning.png");
-    let lightning_sprite = Texture::from_path(
-        &mut *window.factory.borrow_mut(),
-        &sprite,
-        Flip::None,
-        &TextureSettings::new())
-        .unwrap();
-    let clock_sprite = Texture::from_path(
-        &mut *window.factory.borrow_mut(),
-        &assets.join("clock.png"),
-        Flip::None,
-        &TextureSettings::new())
-        .unwrap();
-
-    let goal_sprite = Texture::from_path(
-        &mut *window.factory.borrow_mut(),
-        &assets.join("soylent.jpg"),
-        Flip::None,
-        &TextureSettings::new())
-        .unwrap();
     let unknown_sprite = Texture::from_path(
         &mut *window.factory.borrow_mut(),
         &assets.join("unknown.png"),
         Flip::None,
         &TextureSettings::new())
         .unwrap();
-    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite, unknown_sprite, goal_sprite);
+
+    let mut sprites = HashMap::new();
+    let lightning_sprite = retrieve_sprite(&mut window, "lightning.png");
+
+    sprites.insert("lightning".to_string(), lightning_sprite);
+    sprites.insert("goal".to_string(), retrieve_sprite(&mut window, "soylent.jpg"));
+    sprites.insert("clock".to_string(), retrieve_sprite(&mut window, "clock.png"));
+
+    let settings = resources::Settings::new(font, sprites, unknown_sprite);
 
     let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(

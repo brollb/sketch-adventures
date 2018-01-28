@@ -32,7 +32,7 @@ impl Lightning {
             effect: effects::Effect::Destroy,
             start_time: time::Instant::now(),
             alive: true,
-            sprite: settings.lightning_sprite.clone(),
+            sprite: settings.get_sprite_for("lightning"),
             x,
             y
         }
@@ -79,7 +79,7 @@ impl Clock {
             start_time: time::Instant::now(),
             effect: effects::Effect::SlowTime,
             alive: true,
-            sprite: settings.clock_sprite.clone(),
+            sprite: settings.get_sprite_for("clock"),
             x,
             y
         }
@@ -103,8 +103,8 @@ impl Creation for Clock {
     }
 
     fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
-        // Draw player on the screen
         image(&self.sprite, c.transform.trans(self.x, self.y), g);
+        // Draw player on the screen
     }
 
 }
@@ -121,15 +121,7 @@ pub struct DummyCreation {
 
 impl DummyCreation {
     pub fn new(x: f64, y: f64, settings: &resources::Settings, name: &str) -> DummyCreation {
-        let mut sprite = settings.unknown_sprite.clone();
-        match name {
-            "Hand" => {
-                sprite = settings.clock_sprite.clone();
-            }
-            _ => {
-                println!("")
-            }
-        }
+        let sprite = settings.get_sprite_for(name);
         DummyCreation {
             start_time: time::Instant::now(),
             // FIXME remove effect / add poof effect
@@ -160,7 +152,6 @@ impl Creation for DummyCreation {
     }
 
     fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
-        // Draw player on the screen
         image(&self.sprite, c.transform.trans(self.x, self.y), g);
     }
 

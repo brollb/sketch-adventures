@@ -17,7 +17,7 @@ pub struct Goal {
 impl Goal {
     pub fn new(x: f64, y: f64, settings: &resources::Settings) -> Goal {
         Goal{
-            sprite: settings.goal_sprite.clone(),
+            sprite: settings.get_sprite_for("goal"),
             x,
             y
         }
