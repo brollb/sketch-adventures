@@ -109,3 +109,59 @@ impl Creation for Clock {
 
 }
 
+
+pub struct DummyCreation {
+    pub alive: bool,
+    sprite: Texture<Resources>,
+    effect: effects::Effect,
+    start_time: time::Instant,
+    x: f64,
+    y: f64,
+}
+
+impl DummyCreation {
+    pub fn new(x: f64, y: f64, settings: &resources::Settings, name: &str) -> DummyCreation {
+        let mut sprite = settings.clock_sprite.clone();
+        match name {
+            "Hand" => {
+                sprite = settings.clock_sprite.clone();
+            }
+            _ => {
+                println!("")
+            }
+        }
+        DummyCreation {
+            start_time: time::Instant::now(),
+            // FIXME remove effect / add poof effect
+            effect: effects::Effect::Nothing,
+            alive: true,
+            // TODO pick the sprite based on name
+            sprite: sprite,
+            x,
+            y
+        }
+    }
+}
+
+impl Creation for DummyCreation {
+
+    fn get_effect(&self) -> &effects::Effect {
+        &self.effect
+    }
+
+    fn is_alive(&self) -> bool {
+        self.alive
+    }
+
+    fn update(&mut self, dt: f64) {
+        let dy = 200.0 * dt;
+        self.y -= dy;
+        self.alive = self.start_time.elapsed().as_secs() < 10;
+    }
+
+    fn render(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
+        // Draw player on the screen
+        image(&self.sprite, c.transform.trans(self.x, self.y), g);
+    }
+
+}

@@ -276,7 +276,12 @@ impl Game {
                 self.creations.push(Box::new(creations::Clock::new(x, y, &self.settings)));
             },
             _ => {
-                println!("unfortunately, {}s are not yet supported...", class)
+                // TODO if one of other classes create a dummy creation
+                // they probably need to know about available classes
+                self.message = None;
+                let (x, y) = (self.width/2.0 - 200.0, self.height/2.0 - 200.0);
+                self.creations.push(Box::new(creations::DummyCreation::new(x, y, &self.settings, class)));
+                println!("you can't use {} in this scenario..", class)
             }
         }
     }

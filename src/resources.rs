@@ -8,6 +8,7 @@ pub struct Settings {
     pub lightning_sprite: piston_window::Texture<Resources>,
     pub clock_sprite: piston_window::Texture<Resources>,
     pub goal_sprite: piston_window::Texture<Resources>,
+    // TODO add other sprites
     pub font: GlyphCache<'static, Factory, Resources>,
     pub font_size: u32
 }
