@@ -13,6 +13,7 @@ extern crate image;
 extern crate ggez;
 
 use std::sync::mpsc;
+use std::boxed::Box;
 use std::path::Path;
 use std::fs::File;
 use std::process::Command;
@@ -58,7 +59,7 @@ struct Game {
     pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     transmitter: mpsc::Sender<String>,
     receiver: mpsc::Receiver<String>,
-    creations: std::vec::Vec<creations::Lightning>,
+    creations: std::vec::Vec<Box<creations::Creation>>,
 
     // Intro
     state: GameState,
@@ -151,7 +152,7 @@ impl Game {
                 for creation in self.creations.iter_mut() {
                     creation.update(dt);
                 }
-                self.creations.drain_filter(|c| !c.alive);
+                self.creations.drain_filter(|c| !c.is_alive());
             }
         }
 
@@ -252,10 +253,16 @@ impl Game {
                 println!("adding lightning!");
                 self.message = None;
                 let (x, y) = (self.width/2.0, self.height/2.0);
-                self.creations.push(creations::Lightning::new(x, y, &self.settings));
+                self.creations.push(Box::new(creations::Lightning::new(x, y, &self.settings)));
+            },
+            "Clock" => {
+                println!("adding clock!");
+                self.message = None;
+                let (x, y) = (self.width/2.0, self.height/2.0);
+                self.creations.push(Box::new(creations::Clock::new(x, y, &self.settings)));
             },
             _ => {
-                println!("creating a {}", class)
+                println!("unfortunately, {}s are not yet supported...", class)
             }
         }
     }
@@ -400,7 +407,13 @@ fn main() {
         Flip::None,
         &TextureSettings::new())
         .unwrap();
-    let settings = resources::Settings::new(font, lightning_sprite);
+    let clock_sprite = Texture::from_path(
+        &mut *window.factory.borrow_mut(),
+        &assets.join("clock.png"),
+        Flip::None,
+        &TextureSettings::new())
+        .unwrap();
+    let settings = resources::Settings::new(font, lightning_sprite, clock_sprite);
 
     let mut game = Game::new(width as f64, height as f64, settings);
     let mut texture = Texture::from_image(

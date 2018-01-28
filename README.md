@@ -31,9 +31,9 @@
     - lower priority...
 
 ## Images to detect:
-- lightning?
+- [x] lightning?
     - collision detection??
-- clock
+- [ ] clock
     - slow down time
 
 ## Feature List:
