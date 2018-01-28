@@ -9,6 +9,7 @@ extern crate vecmath;
 extern crate image;
 
 use std::fs::File;
+use std::process::Command;
 use piston_window::*;
 use std::thread;
 use std::borrow::BorrowMut;
@@ -172,14 +173,57 @@ impl Game {
         self.last_pos = None;
     }
 
+    fn create_drawing(&mut self, class: &str) {
+        // TODO
+    }
+
     fn on_drawing_complete(&mut self) {
         // Save the image to a file for now. In the future, we need to hand it off
         // for classification
         let buffer = self.canvas.clone();
         thread::spawn(move || {
-            let ref mut fout = File::create("drawing.png").unwrap();
+            let filename = "drawing.png";
+            let ref mut fout = File::create(filename).unwrap();
             image::ImageRgba8(buffer).save(fout, image::PNG).unwrap();
             println!("saved drawing to drawing.png");
+
+            // TODO: run the python code
+            let output = Command::new("python")
+                .arg("./src/doodle-classifier.py")
+                .arg(filename)
+                .output().unwrap_or_else(|e| {
+                    panic!("Classification failed: {}", e)
+                });
+
+            if output.status.success() {
+                let s = String::from_utf8_lossy(&output.stdout);
+                let mut lines = s.rsplit("\n");
+                lines.next();
+                if let Some(line) = lines.next() {
+                    if let Some(class) = line.split(",").next() {
+                        // TODO: send the class back to the main process
+                        //self.create_drawing(class);
+                        println!("detected {}", class);
+                    }
+                    /*
+                    let conf = conf_string.parse::<f64>();
+                    if conf > 0.5 {
+                        self.create_drawing(class);
+                    } else {
+                        println!("thought it was {} but not sure ({})", class, conf);
+                    }
+                    */
+                }
+                //println!("len is {}", len);
+                //if let Some(last_line) = lines.next() {
+                    //println!("last_line was:\n{}", last_line);
+                //}
+
+            } else {
+                let s = String::from_utf8_lossy(&output.stderr);
+
+                println!("failed. stderr was:\n{}", s);
+            }
         });
 
         // Create an entity of the given type if needed
