@@ -202,12 +202,19 @@ impl Game {
                     let diff_x = x - last_x;
                     let diff_y = y - last_y;
                     let delta = i as f32 / distance as f32;
-                    let new_x = (last_x + (diff_x * delta)) as u32;
-                    let new_y = (last_y + (diff_y * delta)) as u32;
+                    let mut new_x = (last_x + (diff_x * delta)) as u32;
+                    let mut new_y = (last_y + (diff_y * delta)) as u32;
                     // Make the line thicker?
                     // TODO
+                    let pen_size = 3;
+                    new_x -= pen_size;
+                    new_y -= pen_size;
                     if new_x < width && new_y < height {
-                        self.canvas.put_pixel(new_x, new_y, Rgba([0, 0, 0, 255]));
+                        for dx in 0..(2*pen_size + 1) {
+                            for dy in 0..(2*pen_size + 1) {
+                                self.canvas.put_pixel(new_x+dx, new_y+dy, Rgba([0, 0, 0, 255]));
+                            }
+                        }
                     };
                 };
             };
