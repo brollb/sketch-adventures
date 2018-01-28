@@ -466,6 +466,11 @@ fn main() {
     sprites.insert("lightning".to_string(), lightning_sprite);
     sprites.insert("goal".to_string(), retrieve_sprite(&mut window, "soylent.jpg"));
     sprites.insert("clock".to_string(), retrieve_sprite(&mut window, "clock.png"));
+    sprites.insert("Mountain".to_string(), retrieve_sprite(&mut window, "mountain.png"));
+    sprites.insert("Lollipop".to_string(), retrieve_sprite(&mut window, "lollipop.png"));
+    sprites.insert("Pizza".to_string(), retrieve_sprite(&mut window, "pizza.png"));
+    sprites.insert("Baseball".to_string(), retrieve_sprite(&mut window, "baseball.png"));
+    sprites.insert("Hat".to_string(), retrieve_sprite(&mut window, "hat.png"));
 
     let settings = resources::Settings::new(font, sprites, unknown_sprite);
 
