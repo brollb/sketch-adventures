@@ -39,7 +39,8 @@ use enemy::Enemy;
 
 enum GameState {
     Intro,
-    Playing
+    Playing,
+    GameOver
 }
 
 struct Game {
@@ -75,7 +76,7 @@ struct Game {
 
 impl Game {
     pub fn new(width: f64, height: f64, settings: resources::Settings) -> Game {
-        let player = Player::new(100.0, height - 80.0);
+        let player = Player::new(100.0, height - 340.0);
         let min_x = width/4.0;
         let max_x = min_x + width/2.0;
         let enemy = Enemy::new(min_x, max_x, height);
@@ -167,9 +168,30 @@ impl Game {
                     creation.update(dt);
                 }
                 self.creations.drain_filter(|c| !c.is_alive());
-            }
+
+                // Detect collisions (gonna be a bit hacky - fair warning)
+                // is the enemy touching the player?
+                if are_touching(self.player.x, self.player.y, self.enemy.x, self.enemy.y, 100.0) {
+                    self.player.die();
+                    self.state = GameState::GameOver;
+
+                    self.message = Some("Game Over".to_string());
+                    self.font_size = 64;
+                    self.message_position = (400.0, 400.0);
+                }
+
+                // is the goal touching the player?
+                if self.goal.x < (self.player.x + 100.0) {
+                    self.state = GameState::GameOver;
+                    self.message = Some("You Win!".to_string());
+                    self.font_size = 64;
+                    self.message_position = (400.0, 400.0);
+                }
+            },
+            _ => {}
         }
 
+        // Create any drawings that need to be created
         match self.receiver.try_recv() {
             Ok(msg) => self.create_drawing(&msg),
             _ => {
@@ -375,13 +397,13 @@ impl Game {
         clear([1.0; 4], g);
         match self.state {
             GameState::Playing =>  {
-                self.player.render(c, g);
                 self.goal.render(c, g);
+                self.player.render(c, g);
                 self.enemy.render(c, g);
                 for creation in self.creations.iter() {
                     creation.render(c, g);
                 }
-            }
+            },
             _ => {}
         }
 
@@ -482,4 +504,13 @@ fn main() {
             game.on_mouse_move(pos);
         }
     }
+}
+
+fn are_touching(l1: f64, t1: f64, l2: f64, t2: f64, threshold: f64) -> bool {
+    let (x1, y1) = (l1 + threshold/2.0, t1 + threshold/2.0);
+    let (x2, y2) = (l2 + threshold/2.0, t2 + threshold/2.0);
+    let dx = (x1 - x2).abs();
+    let dy = (y1 - y2).abs();
+    // check if x1, x2 are within 50 px and y1, y2 are also within 50 px
+    dx < threshold && dy < threshold
 }

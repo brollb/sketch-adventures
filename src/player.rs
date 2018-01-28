@@ -6,14 +6,19 @@ use gfx_graphics::GfxGraphics;
 use piston_window::Transformed;
 
 pub struct Player {
-    x: f64,
-    y: f64,
+    pub alive: bool,
+    pub x: f64,
+    pub y: f64,
     sprite: Option<Texture<Resources>>,
 }
 
 impl Player {
     pub fn new(x: f64, y: f64) -> Player {
-        Player{x, y, sprite: None}
+        Player{alive: true, x, y, sprite: None}
+    }
+
+    pub fn die(&mut self) {
+        self.alive = false;
     }
 
     pub fn set_sprite(&mut self, sprite: Texture<Resources>) {

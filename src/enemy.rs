@@ -9,11 +9,11 @@ use gfx_graphics::GfxGraphics;
 
 pub struct Enemy {
     sprite: Option<Texture<Resources>>,
-    x: f64,
+    pub x: f64,
+    pub y: f64,
     min_x: f64,
     max_x: f64,
-    max_y: f64,
-    y: f64
+    max_y: f64
 }
 
 impl Enemy {

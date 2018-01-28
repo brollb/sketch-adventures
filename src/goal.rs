@@ -5,14 +5,13 @@ extern crate gfx_graphics;
 use piston_window::{Context, image, Texture, Transformed};
 use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
-use std::time;
 
 use resources;
 
 pub struct Goal {
     sprite: Texture<Resources>,
-    x: f64,
-    y: f64
+    pub x: f64,
+    pub y: f64
 }
 
 impl Goal {
