@@ -125,7 +125,7 @@ impl Game {
                     ("Caller: I was thinking about using *lightning*...", (200.0, 300.0), 24),
                     ("Caller: Or maybe something like a *clock*...", (220.0, 300.0), 24),
                     ("Caller: Think you could help me out?", (240.0, 300.0), 24),
-                    ("You: Sure, I could probably sketch something out!", (200.0, 300.0), 24)
+                    ("You: Sure, I could probably *sketch* something out!", (150.0, 300.0), 24)
                 ];
 
                 let duration = time::Instant::now().duration_since(self.start_time);
