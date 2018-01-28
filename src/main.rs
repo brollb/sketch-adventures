@@ -169,6 +169,7 @@ impl Game {
         let width = self.width as u32;
         let height = self.height as u32;
         self.canvas = image::ImageBuffer::new(width, height);
+        self.last_pos = None;
     }
 
     fn on_drawing_complete(&mut self) {
