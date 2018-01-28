@@ -1,3 +1,4 @@
+extern crate graphics;
 extern crate piston;
 extern crate piston_window;
 extern crate gfx_device_gl;
@@ -7,6 +8,7 @@ extern crate gfx_graphics;
 
 extern crate vecmath;
 extern crate image;
+extern crate ggez;
 
 use std::fs::File;
 use piston_window::*;
@@ -16,13 +18,19 @@ use vecmath::*;
 use image::Rgba;
 
 
-use gfx_device_gl::{Resources, CommandBuffer};
+use gfx_device_gl::{Resources, CommandBuffer, Factory};
 use gfx_graphics::GfxGraphics;
 
+mod resources;
 mod player;
 use player::Player;
 mod enemy;
 use enemy::Enemy;
+
+enum GameState {
+    Intro,
+    Playing
+}
 
 struct Game {
     width: f64,
@@ -39,7 +47,12 @@ struct Game {
     // Drawing
     is_drawing: bool,
     last_pos: Option<[f64; 2]>,
-    pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>
+    pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>,
+
+    // Intro
+    state: GameState,
+    settings: resources::Resources,
+    pub message: Option<String>
 }
 
 impl Game {
@@ -58,13 +71,19 @@ impl Game {
             left_d: false,
             is_drawing: false,
             last_pos: None,
-            canvas: empty_canvas
+            canvas: empty_canvas,
+            message: None,
+            settings: resources::Resources::new(),
+
+            state: GameState::Playing
         }
     }
 
+    // Create an intro 
+    // TODO
+
     pub fn on_update(&mut self, upd: UpdateArgs) {
         // Detect collisions, etc
-        // TODO
         let dt = upd.dt;
         let speed = 100.0;
         self.enemy.update(dt);
@@ -80,12 +99,19 @@ impl Game {
         }
         */
 
-        if self.right_d {
-            self.player.mov(speed * dt, 0.0);
-        }
+        match self.state {
+            GameState::Playing => {
+                if self.right_d {
+                    self.player.mov(speed * dt, 0.0);
+                }
 
-        if self.left_d {
-            self.player.mov(-speed * dt, 0.0);
+                if self.left_d {
+                    self.player.mov(-speed * dt, 0.0);
+                }
+            }
+            _ => {
+                println!("unknown game state!")
+            }
         }
     }
 
@@ -204,8 +230,6 @@ impl Game {
                     let delta = i as f32 / distance as f32;
                     let mut new_x = (last_x + (diff_x * delta)) as u32;
                     let mut new_y = (last_y + (diff_y * delta)) as u32;
-                    // Make the line thicker?
-                    // TODO
                     let pen_size = 3;
                     new_x -= pen_size;
                     new_y -= pen_size;
@@ -223,12 +247,22 @@ impl Game {
         }
     }
 
-    pub fn on_draw(&self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
+    pub fn on_draw(&mut self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
         // Redraw the screen (render each thing)
         clear([1.0; 4], g);
-        self.player.render(c, g);
-        self.enemy.render(c, g);
+        match self.state {
+            _ =>  {  // FIXME
+                self.player.render(c, g);
+                self.enemy.render(c, g);
 
+                let text = graphics::Text::new(self.settings.font_size);
+                if let Some(msg) = self.message {
+                    let transform = c.transform.trans(10.0, 100.0);
+                    text.draw(&msg.to_string(), self.settings.font,
+                              &c.draw_state, transform, g);
+                }
+            }
+        }
 
         // Draw the ground
         rectangle([0.3, 0.3, 0.3, 1.0], // black
@@ -250,6 +284,8 @@ fn main() {
             &TextureSettings::new()
         ).unwrap();
 
+
+    // Get the game font
     game.on_load(&mut window);
     while let Some(e) = window.next() {
         // Split this into update and render events as done
@@ -268,6 +304,8 @@ fn main() {
                 &game.canvas,
                 &TextureSettings::new()
             ).unwrap();
+
+        let msg = 
         window.draw_2d(&e, |c, g| {
             // Detect drawing...
             game.on_draw(c, g);
