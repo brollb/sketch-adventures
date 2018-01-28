@@ -8,6 +8,7 @@ extern crate gfx_graphics;
 extern crate vecmath;
 extern crate image;
 
+use std::sync::mpsc;
 use std::fs::File;
 use std::process::Command;
 use piston_window::*;
@@ -40,7 +41,10 @@ struct Game {
     // Drawing
     is_drawing: bool,
     last_pos: Option<[f64; 2]>,
-    pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>
+    pub canvas: image::ImageBuffer<Rgba<u8>, Vec<u8>>,
+    transmitter: mpsc::Sender<String>,
+    receiver: mpsc::Receiver<String>
+
 }
 
 impl Game {
@@ -48,6 +52,7 @@ impl Game {
         let player = Player::new(100.0, 100.0);
         let enemy = Enemy::new(200.0, 100.0);
         let empty_canvas = image::ImageBuffer::new(width as u32, height as u32);
+        let (tx, rx) = mpsc::channel();
         Game{
             player,
             enemy,
@@ -59,7 +64,9 @@ impl Game {
             left_d: false,
             is_drawing: false,
             last_pos: None,
-            canvas: empty_canvas
+            canvas: empty_canvas,
+            transmitter: tx,
+            receiver: rx
         }
     }
 
@@ -70,7 +77,6 @@ impl Game {
         let speed = 100.0;
         self.enemy.update(dt);
 
-        // TODO: get the window encoder...
         /*
         if self.up_d {
             self.player.mov(0.0, speed * dt);
@@ -88,6 +94,13 @@ impl Game {
         if self.left_d {
             self.player.mov(-speed * dt, 0.0);
         }
+
+        match self.receiver.try_recv() {
+            Ok(msg) => self.create_drawing(&msg),
+            _ => {
+            }
+        }
+        
     }
 
     fn on_load(&mut self, w: &mut PistonWindow) {
@@ -174,20 +187,22 @@ impl Game {
     }
 
     fn create_drawing(&mut self, class: &str) {
-        // TODO
+        match class {
+            _ => println!("creating a {}", class)
+        }
     }
 
     fn on_drawing_complete(&mut self) {
         // Save the image to a file for now. In the future, we need to hand it off
         // for classification
         let buffer = self.canvas.clone();
+        let tx = self.transmitter.clone();
         thread::spawn(move || {
             let filename = "drawing.png";
             let ref mut fout = File::create(filename).unwrap();
             image::ImageRgba8(buffer).save(fout, image::PNG).unwrap();
             println!("saved drawing to drawing.png");
 
-            // TODO: run the python code
             let output = Command::new("python")
                 .arg("./src/doodle-classifier.py")
                 .arg(filename)
@@ -201,9 +216,7 @@ impl Game {
                 lines.next();
                 if let Some(line) = lines.next() {
                     if let Some(class) = line.split(",").next() {
-                        // TODO: send the class back to the main process
-                        //self.create_drawing(class);
-                        println!("detected {}", class);
+                        tx.send(class.to_string()).unwrap();
                     }
                     /*
                     let conf = conf_string.parse::<f64>();
@@ -214,10 +227,6 @@ impl Game {
                     }
                     */
                 }
-                //println!("len is {}", len);
-                //if let Some(last_line) = lines.next() {
-                    //println!("last_line was:\n{}", last_line);
-                //}
 
             } else {
                 let s = String::from_utf8_lossy(&output.stderr);
@@ -226,8 +235,6 @@ impl Game {
             }
         });
 
-        // Create an entity of the given type if needed
-        // TODO
         self.clear_drawing();
     }
 
