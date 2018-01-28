@@ -1,23 +1,31 @@
 import os
+import math
 import sys
-# import keras
+import keras
 import numpy as np
 from PIL import Image
 
 model_path = os.path.join(os.getcwd(), "assets/doodle-model.h5")
-# model = keras.models.load_model(model_path)
+model = keras.models.load_model(model_path)
 TARGET_DIM = 28 # target image dimension for the neural network
 
-
-def predict(imageData):
-    img = np.array(imageData, np.float32).reshape(1, 28, 28, 1)
-    img /= 255
-    result = model.predict(img)[0]
-    return result
+CATEGORIES = [
+    "Baseball",
+    "Bowtie",
+    "Clock",
+    "Hand",
+    "Hat",
+    "Lightning",
+    "Lollipop",
+    "Mountain",
+    "Pizza",
+    "Star"
+]
 
 def load_image(path):
+    # TODO load as black and white (0 or 1)
     img = Image.open(path) #Can be many different formats.
-    pix = img.load()
+    img.load()
     print(f'loaded image of size {img.size}')
     print(f'image trasnparency status {img.getbbox()}')
     return img
@@ -30,17 +38,22 @@ def trim_image(img):
     vertical_padding = (longer_side - img.size[1]) / 2
     img = img.crop(
         (
-            -horizontal_padding,
-            -vertical_padding,
-            img.size[0] + horizontal_padding,
-            img.size[1] + vertical_padding
+            -math.ceil(horizontal_padding),
+            -math.ceil(vertical_padding),
+            img.size[0] + math.floor(horizontal_padding),
+            img.size[1] + math.floor(vertical_padding)
         )
     )
     return img
 
+# convert transparent pixels to white
+def rasterize(img):
+    canvas = Image.new('RGBA', img.size, (255,255,255,255)) # Empty canvas colour (r,g,b,a)
+    canvas.paste(img, mask=img) # Paste the image onto the canvas, using it's alpha channel as mask
+    return canvas
 
 def resize_image(image):
-    assert image.size[0] == image.size[1], "pass in a square image"
+    assert image.size[0] == image.size[1], f"image should be square {image.size}"
     wpercent = (TARGET_DIM/float(image.size[0]))
     hsize = int((float(image.size[1])*float(wpercent)))
     image = image.resize((TARGET_DIM,hsize), Image.ANTIALIAS)
@@ -48,6 +61,16 @@ def resize_image(image):
 
 def save_image(img, path):
     img.save(path)
+
+# convert grayscale to black and white
+def black_white(pixels):
+    pixels[pixels < 255] = 0
+    return pixels
+
+def inverse(pixels):
+    pixels *= -1
+    pixels += 255
+    return pixels
 
 
 if __name__ == '__main__':
@@ -57,10 +80,19 @@ if __name__ == '__main__':
     path = sys.argv[1]
     image = load_image(path)
     image = trim_image(image)
-    # image = resize_image(image)
-    # save_image(image, 'cropped_drawing.png')
-    print(image.getpixel((0,0)))
+    image = rasterize(image)
+    image = resize_image(image)
+    image = image.convert('L') # make it grayscale
+    save_image(image, 'cropped_drawing.png')
 
-# TODO pixelval /= 255
+    image_data = np.asarray(image, np.float32)
+    image_data = image_data.reshape(28*28) # redundant?
+    image_data = inverse(image_data)
 
-    # print(predict(imagedata))
+    image_data = image_data.reshape(1, 28, 28, 1)
+    image_data /= 255 # 
+    print('image shape', image_data.shape)
+
+    probs = model.predict(image_data)[0]
+    print(dict(zip(CATEGORIES, probs)))
+
