@@ -469,6 +469,7 @@ fn main() {
     sprites.insert("Pizza".to_string(), retrieve_sprite(&mut window, "pizza.png"));
     sprites.insert("Baseball".to_string(), retrieve_sprite(&mut window, "baseball.png"));
     sprites.insert("Hat".to_string(), retrieve_sprite(&mut window, "hat.png"));
+    sprites.insert("Hand".to_string(), retrieve_sprite(&mut window, "hand.png"));
 
     let settings = resources::Settings::new(font, sprites, unknown_sprite);
 
