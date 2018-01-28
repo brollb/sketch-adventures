@@ -291,11 +291,13 @@ impl Game {
 
         let tx = self.transmitter.clone();
         thread::spawn(move || {
+            let mut now = time::Instant::now();
             let filename = "drawing.png";
             let ref mut fout = File::create(filename).unwrap();
             image::ImageRgba8(buffer).save(fout, image::PNG).unwrap();
-            println!("saved drawing to drawing.png");
+            println!("saved drawing to drawing.png ({:?})", now.elapsed());
 
+            now = time::Instant::now();
             let output = Command::new("python")
                 .arg("./src/doodle-classifier.py")
                 .arg(filename)
@@ -303,6 +305,7 @@ impl Game {
                     panic!("Classification failed: {}", e)
                 });
 
+            println!("classification took ({:?})", now.elapsed());
             if output.status.success() {
                 let s = String::from_utf8_lossy(&output.stdout);
                 let mut lines = s.rsplit("\n");
@@ -372,8 +375,8 @@ impl Game {
         clear([1.0; 4], g);
         match self.state {
             GameState::Playing =>  {
-                self.goal.render(c, g);
                 self.player.render(c, g);
+                self.goal.render(c, g);
                 self.enemy.render(c, g);
                 for creation in self.creations.iter() {
                     creation.render(c, g);

@@ -7,14 +7,6 @@ use piston_window::{Context, rectangle, image, Texture, Transformed};
 use gfx_device_gl::{Resources, CommandBuffer};
 use gfx_graphics::GfxGraphics;
 
-// Can't declare a module here... why?
-//mod point;
-//use point::Point;
-pub struct Point {
-    x: f64,
-    y: f64
-}
-
 pub struct Enemy {
     sprite: Option<Texture<Resources>>,
     x: f64,
