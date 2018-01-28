@@ -94,5 +94,9 @@ if __name__ == '__main__':
     print('image shape', image_data.shape)
 
     probs = model.predict(image_data)[0]
-    print(dict(zip(CATEGORIES, probs)))
+    predictions = dict(zip(CATEGORIES, probs))
+    predictions = sorted(predictions.items(), key=lambda x:x[1], reverse=True)
+    best_guess = predictions[0]
+    print(predictions)
+    print(f'{best_guess[0]},{best_guess[1]}')
 
