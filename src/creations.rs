@@ -65,8 +65,8 @@ pub struct Clock {
 }
 
 impl Clock {
-    pub fn new(x: f64, y: f64, settings: &resources::Settings) -> Lightning {
-        Lightning{
+    pub fn new(x: f64, y: f64, settings: &resources::Settings) -> Clock {
+        Clock {
             start_time: time::Instant::now(),
             alive: true,
             sprite: settings.clock_sprite.clone(),
@@ -83,7 +83,7 @@ impl Creation for Clock {
     }
 
     fn update(&mut self, dt: f64) {
-        let dy = 500.0 * dt;
+        let dy = 200.0 * dt;
         self.y += dy;
         self.alive = self.start_time.elapsed().as_secs() < 10;
     }

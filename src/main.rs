@@ -252,13 +252,13 @@ impl Game {
             "Lightning" => {
                 println!("adding lightning!");
                 self.message = None;
-                let (x, y) = (self.width/2.0, self.height/2.0);
+                let (x, y) = (self.width/2.0 - 150.0, self.height/2.0 - 150.0);
                 self.creations.push(Box::new(creations::Lightning::new(x, y, &self.settings)));
             },
             "Clock" => {
                 println!("adding clock!");
                 self.message = None;
-                let (x, y) = (self.width/2.0, self.height/2.0);
+                let (x, y) = (self.width/2.0 - 200.0, self.height/2.0 - 200.0);
                 self.creations.push(Box::new(creations::Clock::new(x, y, &self.settings)));
             },
             _ => {
