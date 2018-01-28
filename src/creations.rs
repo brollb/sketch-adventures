@@ -98,7 +98,7 @@ impl Creation for Clock {
 
     fn update(&mut self, dt: f64) {
         let dy = 200.0 * dt;
-        self.y += dy;
+        self.y -= dy;
         self.alive = self.start_time.elapsed().as_secs() < 10;
     }
 
