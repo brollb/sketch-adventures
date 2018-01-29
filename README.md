@@ -5,7 +5,7 @@ This is a game made for Global Game Jam 2018. One of the main goals was to learn
 Regardless, it is a game that allows users to move with the arrow keys and draw with the mouse. The drawing is then classified using [this model](https://github.com/neungkl/quickdraw-10-CNN-classifier) and then the given entity is created in the game world. Clocks are pretty much the only one with any sort of meaningful behavior but it was still an interesting idea imo.
 
 ## Installation
-First, you need to install the python dependencies from `requirements.txt`. Then, you can compile this using rust (we recommend rustc 1.24.0-nightly):
+First, you need to install the python dependencies from `requirements.txt`. Then, you can compile this using rust (we recommend nightly-2017-12-21):
 
     pip install -r requirements.txt
     cargo run
