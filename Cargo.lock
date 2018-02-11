@@ -894,6 +894,24 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "sketch-adventures"
+version = "0.1.0"
+dependencies = [
+ "find_folder 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gfx_device_gl 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston 0.35.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston2d-gfx_graphics 0.48.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston2d-graphics 0.24.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston2d-opengl_graphics 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston_window 0.75.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pistoncore-glutin_window 0.43.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "vecmath 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "stb_truetype"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -948,24 +966,6 @@ dependencies = [
  "rand 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "to-be-determined"
-version = "0.1.0"
-dependencies = [
- "find_folder 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx_device_gl 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "piston 0.35.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "piston2d-gfx_graphics 0.48.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "piston2d-graphics 0.24.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "piston2d-opengl_graphics 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "piston_window 0.75.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "pistoncore-glutin_window 0.43.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rand 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "vecmath 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
