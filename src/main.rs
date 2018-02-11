@@ -146,7 +146,7 @@ impl Game {
             },
             GameState::Playing => {
                 let mut time_stopped = false;
-                for creation in self.creations.iter() {
+                for creation in &self.creations {
                     match *creation.get_effect() {
                         effects::Effect::SlowTime => time_stopped = true,
                         _ => {}
@@ -165,7 +165,7 @@ impl Game {
                     self.player.mov(-speed * dt, 0.0);
                 }
 
-                for creation in self.creations.iter_mut() {
+                for creation in &mut self.creations {
                     creation.update(dt);
                 }
                 self.creations.drain_filter(|c| !c.is_alive());
@@ -193,10 +193,8 @@ impl Game {
         }
 
         // Create any drawings that need to be created
-        match self.receiver.try_recv() {
-            Ok(msg) => self.create_drawing(&msg),
-            _ => {
-            }
+        if let Ok(msg) = self.receiver.try_recv() {
+            self.create_drawing(&msg);
         }
         
     }
@@ -319,7 +317,7 @@ impl Game {
         thread::spawn(move || {
             let mut now = time::Instant::now();
             let filename = "drawing.png";
-            let ref mut fout = File::create(filename).unwrap();
+            let fout = &mut File::create(filename).unwrap();
             image::ImageRgba8(buffer).save(fout, image::PNG).unwrap();
             println!("saved drawing to drawing.png ({:?})", now.elapsed());
 
@@ -334,10 +332,10 @@ impl Game {
             println!("classification took ({:?})", now.elapsed());
             if output.status.success() {
                 let s = String::from_utf8_lossy(&output.stdout);
-                let mut lines = s.rsplit("\n");
+                let mut lines = s.rsplit('\n');
                 lines.next();
                 if let Some(line) = lines.next() {
-                    if let Some(class) = line.split(",").next() {
+                    if let Some(class) = line.split(',').next() {
                         tx.send(class.to_string()).unwrap();
                     }
                     /*
@@ -399,16 +397,13 @@ impl Game {
     pub fn on_draw(&mut self, c: Context, g: &mut GfxGraphics<Resources, CommandBuffer>) {
         // Redraw the screen (render each thing)
         clear([1.0; 4], g);
-        match self.state {
-            GameState::Playing =>  {
-                self.goal.render(c, g);
-                self.player.render(c, g);
-                self.enemy.render(c, g);
-                for creation in self.creations.iter() {
-                    creation.render(c, g);
-                }
-            },
-            _ => {}
+        if let GameState::Playing = self.state {
+            self.goal.render(c, g);
+            self.player.render(c, g);
+            self.enemy.render(c, g);
+            for creation in &self.creations {
+                creation.render(c, g);
+            }
         }
 
         let text = graphics::Text::new(self.font_size);
@@ -473,7 +468,7 @@ fn main() {
 
     let settings = resources::Settings::new(font, sprites, unknown_sprite);
 
-    let mut game = Game::new(width as f64, height as f64, settings);
+    let mut game = Game::new(f64::from(width), f64::from(height), settings);
     let mut texture = Texture::from_image(
             &mut window.factory,
             &image::ImageBuffer::new(width, height),
