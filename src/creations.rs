@@ -124,7 +124,6 @@ impl DummyCreation {
         let sprite = settings.get_sprite_for(name);
         DummyCreation {
             start_time: time::Instant::now(),
-            // FIXME remove effect / add poof effect
             effect: effects::Effect::Nothing,
             alive: true,
             // TODO pick the sprite based on name
