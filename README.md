@@ -8,7 +8,7 @@ Regardless, it is a game that allows users to move with the arrow keys and draw 
 First, you need to install the python dependencies from `requirements.txt`. Then, you can compile this using rust (we recommend nightly-2017-12-21):
 
     pip install -r requirements.txt
-    cargo run
+    cargo run --release
 
 ## To Do:
 - [x] Draw on the screen
